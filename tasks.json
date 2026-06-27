@@ -28,7 +28,25 @@
     },
     {
         "id": 4,
-        "name": "Cloud",
+        "name": "Lu Host",
+        "interval": 14,
+        "lastDate": "2026-02-18",
+        "nextDate": "2026-03-04",
+        "remindAdvance": 3,
+        "shareLink": "https://momy.eu.cc/?remind=7"
+    },
+    {
+        "id": 5,
+        "name": "HaUS2-Run",
+        "interval": 3,
+        "lastDate": "2026-06-19",
+        "nextDate": "2026-06-22",
+        "remindAdvance": 2,
+        "shareLink": "https://momy.eu.cc/?remind=15"
+    },
+    {
+        "id": 6,
+        "name": "FeCloud",
         "interval": 8,
         "lastDate": "2026-06-23",
         "nextDate": "2026-07-01",
