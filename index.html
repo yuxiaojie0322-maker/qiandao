@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的任务 - 节点保活管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body { background-color: #121217; color: #e2e8f0; font-family: system-ui, -apple-system, sans-serif; }
+        .card-bg { background-color: #1a1a24; border: 1px solid #2d2d3d; }
+    </style>
+</head>
+<body class="p-6">
+
+<div id="app" class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+            <span>📋</span> 我的任务
+        </h1>
+        <div class="flex items-center gap-4">
+            <span class="text-sm text-gray-400">欢迎, Admin</span>
+            <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded text-sm transition-colors">退出</button>
+        </div>
+    </div>
+
+    <div v-if="loading" class="text-center text-gray-400 py-10">正在加载任务数据...</div>
+
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-for="task in tasks" :key="task.id" class="card-bg rounded-xl p-6 shadow-lg">
+            <h2 class="text-xl font-semibold mb-6">{{ task.name }}</h2>
+            
+            <div class="space-y-3 text-sm text-gray-300 mb-6">
+                <p>签到间隔：{{ task.interval }} 天</p>
+                <p class="flex justify-between">
+                    <span>上次签到：{{ task.lastDate }}</span>
+                    <span class="text-gray-500">({{ getDaysDiff(task.lastDate, currentDate) }}天前)</span>
+                </p>
+                <p class="flex justify-between items-center">
+                    <span>下次签到：{{ task.nextDate }}</span>
+                    <span v-if="isExpired(task.nextDate)" class="border border-red-900 text-red-400 px-2 py-0.5 rounded text-xs">已过期 {{ getDaysDiff(task.nextDate, currentDate) }} 天</span>
+                    <span v-else class="border border-green-900 text-green-400 px-2 py-0.5 rounded text-xs">还有 {{ Math.abs(getDaysDiff(currentDate, task.nextDate)) }} 天</span>
+                </p>
+                <p>提醒设置：提前 {{ task.remindAdvance }} 天提醒</p>
+                <p class="text-green-500 flex items-center gap-1">
+                    <span>✓</span> 已配置外部提醒
+                </p>
+            </div>
+
+            <div class="flex gap-2 mb-4">
+                <button @click="checkIn(task)" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded text-sm font-medium transition-colors flex-1">立即签到</button>
+                <button class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-sm font-medium transition-colors flex-1">测试提醒</button>
+            </div>
+            
+            <div class="border-t border-gray-700 pt-4">
+                <p class="text-xs text-gray-400 mb-2">快速分享链接：</p>
+                <div class="flex bg-[#0f0f13] rounded p-1 items-center border border-gray-800">
+                    <input type="text" readonly :value="task.shareLink" class="bg-transparent text-teal-600 text-xs w-full px-2 outline-none">
+                    <button class="bg-[#1a1a24] hover:bg-gray-700 text-gray-400 px-3 py-1 rounded text-xs transition-colors">复制</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+        setup() {
+            // 获取当前系统真实日期，格式 YYYY-MM-DD
+            const currentDate = ref(new Date().toISOString().split('T')[0]); 
+            const tasks = ref([]);
+            const loading = ref(true);
+
+            onMounted(() => {
+                // 动态读取本地配置的 json 文件
+                fetch('./tasks.json')
+                    .then(res => res.json())
+                    .then(data => {
+                        tasks.value = data;
+                        loading.value = false;
+                    })
+                    .catch(err => {
+                        console.error('获取任务失败', err);
+                        loading.value = false;
+                    });
+            });
+
+            const getDaysDiff = (date1, date2) => {
+                const d1 = new Date(date1);
+                const d2 = new Date(date2);
+                const diffTime = Math.abs(d2 - d1);
+                return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            };
+
+            const isExpired = (nextDate) => {
+                return new Date(currentDate.value) > new Date(nextDate);
+            };
+
+            const checkIn = (task) => {
+                alert(`正在为 [${task.name}] 执行签到操作...`);
+            };
+
+            return { currentDate, tasks, loading, getDaysDiff, isExpired, checkIn };
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
