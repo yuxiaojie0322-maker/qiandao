@@ -26,4 +26,13 @@
         "remindAdvance": 2,
         "shareLink": "https://momy.eu.cc/?remind=18"
     }
+    {
+        "id": 4,
+        "name": "Cloud",
+        "interval": 8,
+        "lastDate": "2026-06-23",
+        "nextDate": "2026-07-01",
+        "remindAdvance": 2,
+        "shareLink": "https://momy.eu.cc/?remind=18"
+    }
 ]
