@@ -1,0 +1,25 @@
+name: Telegram Reminder Cron
+
+on:
+  schedule:
+    # 每天 UTC 时间凌晨 2 点（北京时间上午 10 点）执行检查
+    - cron: '0 2 * * *'
+  workflow_dispatch: 
+
+jobs:
+  check-and-remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Run Reminder Script
+        env:
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: node remind.js
